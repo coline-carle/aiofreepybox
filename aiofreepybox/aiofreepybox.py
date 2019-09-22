@@ -41,12 +41,13 @@ logger = logging.getLogger(__name__)
 
 
 class Freepybox:
-    def __init__(self, app_desc=app_desc, token_file=token_file, api_version='v3', timeout=10):
+    def __init__(self, app_desc=app_desc, token_file=token_file, api_version='v3', timeout=10, ssl=True):
         self.token_file = token_file
         self.api_version = api_version
         self.timeout = timeout
         self.app_desc = app_desc
         self._access = None
+        self.ssl = ssl
 
     async def open(self, host, port):
         '''
@@ -221,7 +222,11 @@ class Freepybox:
         Returns base url for HTTPS requests
         :return:
         '''
-        return 'https://{0}:{1}/api/{2}/'.format(host, port, freebox_api_version)
+        if self.ssl:
+            protocol="https"
+        else:
+            protocol="http"
+        return '{}://{0}:{1}/api/{2}/'.format(protocol, host, port, freebox_api_version)
 
     def _is_app_desc_valid(self, app_desc):
         '''
